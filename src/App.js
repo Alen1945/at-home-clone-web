@@ -1,12 +1,12 @@
-import React from 'react';
-import socketClient from 'socket.io-client';
-import axios from 'axios';
-import { BrowserRouter as Router, Switch, Route, Link } from 'react-router-dom';
+import React from 'react'
+import socketClient from 'socket.io-client'
+import axios from 'axios'
+import { BrowserRouter as Router, Switch, Route, Link } from 'react-router-dom'
 let socket = null
 
 function App (props) {
   return (
-    <Router>
+    <Router basename={process.env.PUBLIC_URL || '/'}>
       <Switch>
         <Route exact path='/' component={All} />
 
@@ -19,14 +19,14 @@ function App (props) {
 function All (props) {
   const [dataMessage, setDataMessage] = React.useState([])
   const getDataMessage = async () => {
-    const dataMsg = await axios.get('http://127.0.0.1:5001/api/messages')
+    const dataMsg = await axios.get(process.env.REACT_APP_API_URL + '/api/messages')
     if (dataMsg.data.success) {
       setDataMessage(dataMsg.data.data)
     }
   }
   React.useEffect(() => {
     getDataMessage()
-    socket = socketClient('http://127.0.0.1:5001')
+    socket = socketClient(process.env.REACT_APP_API_URL)
     socket.on('newMessage', (data) => {
       setDataMessage((prev) => [...prev, JSON.parse(data)])
     })
@@ -60,7 +60,7 @@ function Detail (props) {
   const [detailMessage, setDetailMessage] = React.useState(false)
   const getDetailMessage = async () => {
     const detailMessage = await axios.get(
-      'http://127.0.0.1:5001/api/messages/' + props.match.params.id
+      process.env.REACT_APP_API_URL + '/api/messages/' + props.match.params.id
     )
     if (detailMessage.data.success) {
       setDetailMessage(detailMessage.data.data)
@@ -94,7 +94,7 @@ function Detail (props) {
                 key={i}
               >
                 <img
-                  src={`http://127.0.0.1:5001${image.pathContent}`}
+                  src={`${process.env.REACT_APP_API_URL}${image.pathContent}`}
                   width='100%'
                   height='auto'
                 />
